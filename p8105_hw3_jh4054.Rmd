@@ -10,9 +10,9 @@ output:
   
 ---
 
-This R Markdown for hw3 reinforces skills from Data Visualization and Exploratory Data Analysis
+This R Markdown for HW3 reinforces skills from Data Visualization and Exploratory Data Analysis
 
-### Setup
+### 0. Setup
 
 Load packages and set chunk options
 
@@ -34,9 +34,8 @@ knitr::opts_chunk$set(
 
 ### Problem 1
 
-Read and clean BRFSS dataset
 ```{r}
-brfss = brfss_smart2010 %>% 
+brfss_df = p8105.datasets::brfss_smart2010 %>% 
   janitor::clean_names() %>% 
   filter(topic == "Overall Health") %>% 
   select(
@@ -44,7 +43,8 @@ brfss = brfss_smart2010 %>%
     -c(confidence_limit_low:geo_location)) %>% 
   separate(locationdesc, into = c("rem1", "county"), sep = 5) %>% 
   select(-rem1) %>% 
-  rename(state = locationabbr) %>% 
+  rename(state = locationabbr, proportion = data_value) %>% 
+  mutate(response = factor(response, levels = c("Excellent","Very good", "Good", "Fair", "Poor"))) %>% 
   arrange(year, state, county)
 ```
 
