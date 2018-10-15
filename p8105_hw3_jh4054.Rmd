@@ -79,3 +79,24 @@ brfss %>%
     theme(legend.position = "bottom")
 ```
 
+Part 3. 
+
+In NY State, the average proportions of "Excellent" responses on the Overall Health questionnaire were 24.04%, 22.53%, and 22.70% in years 2002, 2006, and 2010, respectively. The standard deviation for proportion of "Excellent" responses were 4.49, 4.00, 3.57 in years 2002, 2006, and 2010, respectively.
+
+```{r}
+brfss %>% 
+  filter(
+    year %in% c(2002, 2006, 2010), 
+    response == "Excellent",
+    state == "NY") %>% 
+  group_by(year) %>% 
+  summarise(
+    excellent_mean = mean(proportion),
+    excellent_sd = sd(proportion)
+  ) %>% 
+  knitr::kable(digits = 2)
+```
+
+
+
+
