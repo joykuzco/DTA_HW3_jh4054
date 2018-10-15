@@ -217,8 +217,54 @@ instacart %>%
 
 # Problem 3
 
+* The `ny_noaa` dataset is extracted from the National Oceanic and Atmospheric Administration
+* contains weather parameters from NY weather monitors
+* Date ranges Jan 1st, 1981 to Dec 31st, 2010
+* Data present 747 monitors.
+* Variable names in dataset correspond to the following parameters: prcp = precipitation (tenths of mm), snow = snowfall (mm), snwd = snow depth (mm), tmax = maximum temperature (tenths of Cº), tmin = minimum temperature (tenths of Cº).
+* Missing datapoints presents a significant issue for analysis. The following proportions of each variable is NA:
+    * prcp: 145838 NAs (`r 145838/2595176`%)
+    * snow: 381221 NAs (`r 381221/2595176`%)
+    * snwd: 591786 NAs (`r 591786/2595176`%)
+    * tmax: 1134358 NAs (`r 1134358/2595176`%)
+    * tmin: 1134420 NAs (`r 1134420/2595176`%)
+
+Data Cleaning:
+
+* Convert prcp, snow, snwd, tmax, and tmin to integers
+* Convert units for prcp to "mm", tmin to ºC, tmax to ºC.
+* separate date into year, month, day
+
+```{r, collapse=TRUE}
+#load dataset
+ny_noaa = p8105.datasets::ny_noaa
+
+#dataset cleaning
+noaa_tidy = ny_noaa %>% 
+  janitor::clean_names() %>% 
+  separate(date, into = c("year", "month", "day"), sep = "-") %>% 
+  mutate(
+    prcp = as.integer(prcp)/10,
+    snow = as.integer(snow),
+    snwd = as.integer(snwd),
+    tmax = as.integer(tmax)/10,
+    tmin = as.integer(tmin)/10, 
+    month = as.integer(month), 
+    month = month.abb[month])
+  
+#summary of NAs in each variable
+summary(ny_noaa)
+
+#number of monitor IDs
+ny_noaa %>% 
+  distinct(id) %>% 
+  nrow()
+```
+
+### Part 3.1
+
 ```{r}
-ny_noaa = p8105.datasets::ny_noaa %>% 
-  janitor::clean_names()
+ny_noaa %>%
+  filter()
 ```
 
