@@ -21,6 +21,7 @@ library(tidyverse)
 library(patchwork)
 library(viridis)
 library(janitor)
+library(ggridges)
 library(p8105.datasets)
 
 knitr::opts_chunk$set(
@@ -222,7 +223,7 @@ instacart %>%
 * Date ranges Jan 1st, 1981 to Dec 31st, 2010
 * Data present 747 monitors.
 * Variable names in dataset correspond to the following parameters: prcp = precipitation (tenths of mm), snow = snowfall (mm), snwd = snow depth (mm), tmax = maximum temperature (tenths of Cº), tmin = minimum temperature (tenths of Cº).
-* Missing datapoints presents a significant issue for analysis. The following proportions of each variable is NA:
+* Missing datapoints presents a significant issue for analysis. The following proportions of each variable is missing:
     * prcp: 145838 NAs (`r 145838/2595176`%)
     * snow: 381221 NAs (`r 381221/2595176`%)
     * snwd: 591786 NAs (`r 591786/2595176`%)
@@ -303,26 +304,25 @@ noaa_tidy %>%
 Two panel-plot of tmax vs. tmin 
 
 ```{r}
-library(ggridges)
-
 tmax_tmin = noaa_tidy %>% 
   ggplot(aes(x = tmax, y = tmin)) +
     geom_hex() +
     labs(
-      title = "Maximum versus Minimum Temperature, 1981-2010",
       x = "Maxiumum daily temperature (ºC)",
-      y = "Minimum daily temperature (ºC)")
+      y = "Minimum daily temperature (ºC)") +
+    theme_bw()
 
-noaa_tidy %>% 
+snowfall = noaa_tidy %>% 
   filter(snow > 0 & snow < 100) %>% 
   ggplot(aes(x = snow, y = year, fill = year)) +
   geom_density_ridges(scale = 1, alpha = 0.5) +
   labs(
-      title = "Distribution of Snowfall, 1981-2010",
       x = "Snowfall(mm)",
       y = "Year") +
   viridis::scale_fill_viridis(discrete = TRUE) +
   theme_bw() +  
   theme(legend.position = "none")
+
+tmax_tmin + snowfall
 ```
 
