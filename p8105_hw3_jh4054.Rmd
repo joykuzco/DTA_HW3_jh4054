@@ -95,8 +95,32 @@ brfss %>%
     excellent_sd = sd(proportion)
   ) %>% 
   knitr::kable(digits = 2)
+
+ungroup(brfss)
 ```
 
+Part 4. 
 
+```{r, collapse=TRUE}
+mean_response = brfss %>% 
+  group_by(year, state, response) %>% 
+  summarise(avg_response = mean(proportion))
+
+mean_response %>% 
+  ggplot(aes(x = year, y = avg_response, color = state)) +
+    geom_point() +
+    labs(
+      title = "State-Level Response Proportions by Year",
+      x = "Year",
+      y = "Average Proportion (%)",
+      caption = "Data from the BRFSS dataset"
+    ) + 
+    facet_grid(~response) +   
+    viridis::scale_color_viridis(
+      name = "State", 
+      discrete = TRUE) +
+    theme_bw() +  
+    theme(legend.position = "bottom")
+```
 
 
