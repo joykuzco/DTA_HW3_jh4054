@@ -108,7 +108,7 @@ mean_response = brfss %>%
 
 mean_response %>% 
   ggplot(aes(x = year, y = avg_response, color = state)) +
-    geom_point() +
+    geom_point(alpha = 0.5) +
     labs(
       title = "State-Level Response Proportions by Year",
       x = "Year",
@@ -123,4 +123,44 @@ mean_response %>%
     theme(legend.position = "bottom")
 ```
 
+### Problem 2
 
+1. There are 134 distinct aisles
+2. The top ten aisles with the most number of items ordered are shown in table below. 
+
+Load & clean data
+```{r, collapse=TRUE}
+instacart = p8105.datasets::instacart
+
+#1. number of distinct aisles
+nrow(distinct(instacart, aisle))
+
+#2. Top ten aisles with the most number of items ordered
+instacart %>% 
+  group_by(aisle_id, aisle) %>% 
+  summarise(items = n()) %>% 
+  arrange(desc(items)) %>% 
+  select(aisle, items) %>% 
+  head(10) %>% 
+  knitr::kable()
+
+#3 Plot of number of items ordered by aisle
+instacart %>% 
+  group_by(aisle) %>% 
+  summarise(items = n()) %>% 
+  mutate(aisle = forcats::fct_reorder(aisle, desc(items))) %>% 
+  ggplot(aes(x = aisle, y = items)) +
+    geom_col(aes(fill = aisle), alpha = 0.5) +
+    theme_bw() + 
+    theme(
+      axis.text.x = element_text(angle = 90, size = rel(0.5)), 
+      legend.position = "none") +
+    labs(
+      title = "Number of Items Ordered by Aisle",
+      x = "Aisle",
+      y = "Number of Items",
+      caption = "*Data from Instacart")
+```
+
+* There are 134 distinct aisles
+* The top ten aisles with the most number of items ordered are shown in table below. 
