@@ -149,17 +149,26 @@ The plot displays the distribution of mean proportions across all states for eac
 
 ### Part 2.1
 
-* There are 134 distinct aisles
-* The top ten aisles with the most number of items ordered are shown in table below. 
-
-Load & clean data
+Load instacart dataset 
 ```{r, collapse=TRUE}
+#load instacart dataset
 instacart = p8105.datasets::instacart
 
-#1. number of distinct aisles
+#dimensions of instacart dataset
+dim(instacart)
+
+#number of distinct user IDs
+instacart %>% 
+  distinct(user_id) %>% nrow()
+
+#number of distinct order IDs
+instacart %>% 
+  distinct(order_id) %>% nrow()
+
+#number of distinct aisles = 134
 nrow(distinct(instacart, aisle))
 
-#2. Top ten aisles with the most number of items ordered
+#top ten aisles with the most number of items ordered
 instacart %>% 
   group_by(aisle_id, aisle) %>% 
   summarise(items = n()) %>% 
@@ -169,9 +178,13 @@ instacart %>%
   knitr::kable()
 ```
 
+The dimensions of the instacart dataset is 1384617 rows by 15 columns. The dataset contains order information for 131209 unique orders and 131209 unique user IDs. For each order, the dataset shows the day of week (Sun-Sat) and time of day the order was placed. Each product item within an order is represented as a separate row observation, with column variable details on the sequence item was added to the cart and the product aisle. 
+
+* There are `r nrow(distinct(instacart, aisle))` distinct aisles.
+* The top ten aisles with items that show up most frequently in orders are shown in table. Produce items from aisles fresh vegetables, fresh fruits, and packaged vegetables fruits are most frequently ordered. 
+
 ### Part 2.2
 
-Plot of number of items ordered by aisle
 ```{r}
 #Plot of number of items ordered by aisle
 instacart %>% 
@@ -191,16 +204,17 @@ instacart %>%
       caption = "*Data from Instacart")
 ```
 
+The bar graph displays the number of items ordered in each aisle, ordered from highest to lowest. The aisles with least number of items ordered are beauty, frozen juice, and baby accessories. Aisles with highest number of items ordered are fresh vegetables, fresh fruits, and packaged vegetables fruits.
+
+```{r, include=FALSE}
+#ungroup instacart dataset
+ungroup(instacart)
+```
 
 ### Part 2.3
 
-* The most popular item in the baking ingredients aisle is light brown sugar, present in 499 orders.
-* The most popular item in the dog food care aisle is Snack Sticks Chicken and Rice Recipe Dog Treats, present in 30 orders
-* The most popular item in the packaged vegetables fruits aisle is Organic Baby Spinach, present in 9784 orders.
-
-Table displays the most popular item in the “baking ingredients”, “dog food care”, and “packaged vegetables fruits” aisles.
-
 ```{r}
+#table for most popular items ranking
 instacart %>% 
   filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>% 
   group_by(aisle, product_name) %>% 
@@ -212,6 +226,12 @@ instacart %>%
   knitr::kable()
 ```
 
+Table displays the most frequently ordered item in the “baking ingredients”, “dog food care”, and “packaged vegetables fruits” aisles.
+
+* The most popular item in the baking ingredients aisle is light brown sugar, present in 499 orders.
+* The most popular item in the dog food care aisle is Snack Sticks Chicken and Rice Recipe Dog Treats, present in 30 orders
+* The most popular item in the packaged vegetables fruits aisle is Organic Baby Spinach, present in 9784 orders.
+
 ```{r, include=FALSE}
 #ungroup instacart dataset
 ungroup(instacart)
@@ -219,11 +239,8 @@ ungroup(instacart)
 
 ### Part 2.4
 
-Table displays the mean hour in each day of the week that coffee ice cream and pink lady apples are ordered. For both items, mean order hour falls slightly before noon to early afternoon. This suggests that approximately half of orders are placed before noon and half of orders are placed after. For coffee ice cream, the mean order time is latest midweek from Tues-Thurs around 3pm. 
-
-*In the instacart dataset, we are taking the assumption that values 0-6 in the order_dow variable correspond to days Sun-Sat. 
-
 ```{r}
+#average time of day apples and coffee ice cream ordered
 instacart %>% 
   filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>% 
   group_by(product_name, order_dow) %>% 
@@ -233,25 +250,23 @@ instacart %>%
   knitr::kable(digits = 2)
 ```
 
+Table displays the mean hour of each day that coffee ice cream and pink lady apples are ordered. For both items, mean order hour falls slightly before noon to early afternoon. This suggests that approximately half of orders are placed before noon and half of orders are placed after. For coffee ice cream, the mean order time peaks midweek from Tues-Thurs around 3pm. 
+
+*In the instacart dataset, we are taking the assumption that values 0-6 in the order_dow variable correspond to days Sun-Sat. 
+
 # Problem 3
 
-* The `ny_noaa` dataset is extracted from the National Oceanic and Atmospheric Administration
-* contains weather parameters from NY weather monitors
-* Date ranges Jan 1st, 1981 to Dec 31st, 2010
-* Data present 747 monitors.
-* Variable names in dataset correspond to the following parameters: prcp = precipitation (tenths of mm), snow = snowfall (mm), snwd = snow depth (mm), tmax = maximum temperature (tenths of Cº), tmin = minimum temperature (tenths of Cº).
-* Missing datapoints presents a significant issue for analysis. The following proportions of each variable is missing:
-    * prcp: 145838 NAs (`r 145838/2595176`%)
-    * snow: 381221 NAs (`r 381221/2595176`%)
-    * snwd: 591786 NAs (`r 591786/2595176`%)
-    * tmax: 1134358 NAs (`r 1134358/2595176`%)
-    * tmin: 1134420 NAs (`r 1134420/2595176`%)
+The `ny_noaa` dataset is extracted from the National Oceanic and Atmospheric Administration. Information is present for 747 New York weather stations, from Jan 1st, 1981 to Dec 31st, 2010. Per the NOAA website, raw column variables correspond to the following parameters: prcp = precipitation (tenths of mm), snow = snowfall (mm), snwd = snow depth (mm), tmax = maximum temperature (tenths of Cº), tmin = minimum temperature (tenths of Cº). 
 
-Data Cleaning:
+In the data cleaning process, we convert units for prcp to "mm", tmin to "ºC", tmax to "ºC." For ease of data exploration, we convert prcp, snow, snwd, tmax, and tmin variables to integer variables. The date column variable is separated into three variables for year, month, day.
 
-* Convert prcp, snow, snwd, tmax, and tmin to integers
-* Convert units for prcp to "mm", tmin to ºC, tmax to ºC.
-* separate date into year, month, day
+Missing datapoints present a significant challenge for analysis. For reference, the following proportions of each variable is missing:
+
+  * prcp: 145838 NAs (`r round((145838/2595176), 2)`%)
+  * snow: 381221 NAs (`r round((381221/2595176), 2)`%)
+  * snwd: 591786 NAs (`r round((591786/2595176), 2)`%)
+  * tmax: 1134358 NAs (`r round((1134358/2595176), 2)`%)
+  * tmin: 1134420 NAs (`r round((1134420/2595176), 2)`%)
 
 ```{r, collapse=TRUE}
 #load dataset
