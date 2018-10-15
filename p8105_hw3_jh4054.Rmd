@@ -14,8 +14,7 @@ This R Markdown for HW3 reinforces skills from Data Visualization and Explorator
 
 # Setup
 
-Load packages and set chunk options
-
+Load relevant packages and set global chunk options
 ```{r setup, collapse=TRUE}
 library(tidyverse)
 library(patchwork)
@@ -31,7 +30,7 @@ knitr::opts_chunk$set(
 
 # Problem 1
 
-Import and clean dataset
+Load and clean brfss_smart2010 dataset.
 ```{r}
 brfss = p8105.datasets::brfss_smart2010 %>% 
   janitor::clean_names() %>% 
@@ -51,6 +50,7 @@ brfss = p8105.datasets::brfss_smart2010 %>%
 In 2002, responses for the Overall Health parameter was available for exactly 7 locations in 3 states: Connecticut, Florida, and North Carolina.
 
 ```{r}
+#filter dataset for year 2002 and distinct state-location pairs. 
 brfss %>% 
   filter(year == 2002) %>% 
   distinct(state, location) %>% 
@@ -62,9 +62,10 @@ brfss %>%
 
 ### Part 1.2 
 
-Spaghetti plot that shows the number of locations in each state from 2002 to 2010
-
-```{r}
+```{r, collapse=TRUE}
+#group brfss dataset by state and year. 
+#summarize number of locations in a state in a given year
+#create spaghetti plot
 brfss %>% 
   group_by(state, year) %>% 
   distinct(state, location) %>% 
@@ -84,11 +85,17 @@ brfss %>%
     theme(legend.position = "bottom")
 ```
 
+Spaghetti plot displays the number of locations represented by each state from 2002 to 2010. Outliers are observed for Florida state, where the number of locations spiked in 2007 (n=44) and 2010 (n=41).
+
+```{r, include=FALSE}
+#ungroup brfss data
+ungroup(brfss)
+```
+
 ### Part 1.3 
 
-In NY State, the average proportions of "Excellent" responses on the Overall Health questionnaire were 24.04%, 22.53%, and 22.70% in years 2002, 2006, and 2010, respectively. The standard deviation for proportion of "Excellent" responses were 4.49, 4.00, 3.57 in years 2002, 2006, and 2010, respectively.
-
 ```{r}
+#summarize average proportion and sd of Excellent responses for years 2002, 2006, and 2010
 brfss %>% 
   filter(
     year %in% c(2002, 2006, 2010), 
@@ -100,17 +107,24 @@ brfss %>%
     excellent_sd = sd(proportion)
   ) %>% 
   knitr::kable(digits = 2)
+```
 
+In NY State, the average proportions of "Excellent" responses on the Overall Health questionnaire were 24.04%, 22.53%, and 22.70% in years 2002, 2006, and 2010, respectively. The standard deviation for proportion of "Excellent" responses were 4.49, 4.00, 3.57 in years 2002, 2006, and 2010, respectively.
+
+```{r, include=FALSE}
+#ungroup brfss data
 ungroup(brfss)
 ```
 
 ### Part 1.4 
 
 ```{r, collapse=TRUE}
+#summarize mean proportion for each response category, by state and year
 mean_response = brfss %>% 
   group_by(year, state, response) %>% 
   summarise(avg_response = mean(proportion))
 
+#create plot for the mean proportions in each response category by year
 mean_response %>% 
   ggplot(aes(x = year, y = avg_response, color = state)) +
     geom_point(alpha = 0.5) +
@@ -125,8 +139,11 @@ mean_response %>%
       name = "State", 
       discrete = TRUE) +
     theme_bw() +  
-    theme(legend.position = "bottom")
+    theme(legend.position = "none") +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
+
+The plot displays the distribution of mean proportions across all states for each response category, from 2002 to 2010. 50 states and the District of Columbia are represented. The state legend was omitted in this plot since the individual points are clustered too closely to differentiated coloration for individual states.
 
 # Problem 2
 
