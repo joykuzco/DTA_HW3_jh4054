@@ -162,5 +162,42 @@ instacart %>%
       caption = "*Data from Instacart")
 ```
 
-* There are 134 distinct aisles
-* The top ten aisles with the most number of items ordered are shown in table below. 
+#### Question 3
+
+* The most popular item in the baking ingredients aisle is light brown sugar, present in 499 orders.
+* The most popular item in the dog food care aisle is Snack Sticks Chicken and Rice Recipe Dog Treats, present in 30 orders
+* The most popular item in the packaged vegetables fruits aisle is Organic Baby Spinach, present in 9784 orders.
+
+Table displays the most popular item in the “baking ingredients”, “dog food care”, and “packaged vegetables fruits” aisles.
+
+```{r}
+instacart %>% 
+  filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>% 
+  group_by(aisle, product_name) %>% 
+  summarise(number_orders = n()) %>% 
+  ungroup() %>%
+  group_by(aisle) %>% 
+  mutate(order_rank = min_rank(desc(number_orders))) %>% 
+  filter(order_rank == 1) %>% 
+  knitr::kable()
+
+ungroup(instacart)
+```
+
+#### Question 4
+
+Table displays the mean hour in each day of the week that coffee ice cream and pink lady apples are ordered. For both items, mean order hour falls slightly before noon to early afternoon. This suggests that approximately half of orders are placed before noon and half of orders are placed after. For coffee ice cream, the mean order time is latest midweek from Tues-Thurs around 3pm. 
+
+*In the instacart dataset, we are taking the assumption that values 0-6 in the order_dow variable correspond to days Sun-Sat. 
+
+```{r}
+instacart %>% 
+  filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>% 
+  group_by(product_name, order_dow) %>% 
+  summarise(mean_order_hour = mean(order_hour_of_day, na.rm = TRUE)) %>% 
+  spread(key = order_dow, value = mean_order_hour) %>% 
+  rename(Sun = "0", Mon = "1", Tues = "2", Wed = "3", Thur = "4", Fri = "5", Sat = "6") %>% 
+  knitr::kable(digits = 2)
+```
+
+
