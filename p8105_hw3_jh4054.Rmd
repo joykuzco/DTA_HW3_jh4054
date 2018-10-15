@@ -2,11 +2,7 @@
 title: "p8105_hw3_jh4054"
 author: "Joy Hsu"
 date: "10/12/2018"
-output: 
-  html_document:
-    toc: true
-    toc_float: true
-    code_folding: show
+output: github_document:
   
 ---
 
@@ -340,10 +336,6 @@ Boxplots display the distribution of max temperature monthly averages across wea
 
 ### Part 3.3
 
-The first plot displays the association of max temperature values with minimum temperature values. In general, the two variables are positively correlated. The highest density of observed values are between 0-40 ºC tmax and -15 - 20 ºC tmin.
-
-The second plot displays the distribution of snowfall values from 1981 to 2010. Across years, the highest density occurs between 0-30mm, with another density peak at 50mm 
-
 ```{r}
 tmax_tmin = noaa_tidy %>% 
   ggplot(aes(x = tmax, y = tmin)) +
@@ -367,3 +359,6 @@ snowfall = noaa_tidy %>%
 tmax_tmin + snowfall
 ```
 
+The first plot displays the association of max temperature values with minimum temperature values. In general, the two variables are positively correlated. The highest density of observed values are between 0-40 ºC tmax and -15 - 20 ºC tmin.
+
+The second plot displays the distribution of snowfall values from 1981 to 2010. Across years, the highest density occurs between 0-30mm , with another density peak at 50mm of snowfall
