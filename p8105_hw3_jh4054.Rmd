@@ -12,7 +12,7 @@ output:
 
 This R Markdown for HW3 reinforces skills from Data Visualization and Exploratory Data Analysis
 
-### Setup
+# Setup
 
 Load packages and set chunk options
 
@@ -28,7 +28,7 @@ knitr::opts_chunk$set(
   message = FALSE)
 ```
 
-### Problem 1
+# Problem 1
 
 Import and clean dataset
 ```{r}
@@ -45,7 +45,9 @@ brfss = p8105.datasets::brfss_smart2010 %>%
   arrange(year, state, location)
 ```
 
-Part 1. In 2002, responses for the Overall Health parameter was available for exactly 7 locations in 3 states: Connecticut, Florida, and North Carolina.
+### Part 1.1 
+
+In 2002, responses for the Overall Health parameter was available for exactly 7 locations in 3 states: Connecticut, Florida, and North Carolina.
 
 ```{r}
 brfss %>% 
@@ -57,7 +59,9 @@ brfss %>%
   knitr::kable()
 ```
 
-Part 2. spaghetti plot that shows the number of locations in each state from 2002 to 2010
+### Part 1.2 
+
+Spaghetti plot that shows the number of locations in each state from 2002 to 2010
 
 ```{r}
 brfss %>% 
@@ -79,7 +83,7 @@ brfss %>%
     theme(legend.position = "bottom")
 ```
 
-Part 3. 
+### Part 1.3 
 
 In NY State, the average proportions of "Excellent" responses on the Overall Health questionnaire were 24.04%, 22.53%, and 22.70% in years 2002, 2006, and 2010, respectively. The standard deviation for proportion of "Excellent" responses were 4.49, 4.00, 3.57 in years 2002, 2006, and 2010, respectively.
 
@@ -99,7 +103,7 @@ brfss %>%
 ungroup(brfss)
 ```
 
-Part 4. 
+### Part 1.4 
 
 ```{r, collapse=TRUE}
 mean_response = brfss %>% 
@@ -123,10 +127,12 @@ mean_response %>%
     theme(legend.position = "bottom")
 ```
 
-### Problem 2
+# Problem 2
 
-1. There are 134 distinct aisles
-2. The top ten aisles with the most number of items ordered are shown in table below. 
+### Part 2.1
+
+* There are 134 distinct aisles
+* The top ten aisles with the most number of items ordered are shown in table below. 
 
 Load & clean data
 ```{r, collapse=TRUE}
@@ -143,8 +149,13 @@ instacart %>%
   select(aisle, items) %>% 
   head(10) %>% 
   knitr::kable()
+```
 
-#3 Plot of number of items ordered by aisle
+### Part 2.2
+
+Plot of number of items ordered by aisle
+```{r}
+#Plot of number of items ordered by aisle
 instacart %>% 
   group_by(aisle) %>% 
   summarise(items = n()) %>% 
@@ -162,7 +173,8 @@ instacart %>%
       caption = "*Data from Instacart")
 ```
 
-#### Question 3
+
+### Part 2.3
 
 * The most popular item in the baking ingredients aisle is light brown sugar, present in 499 orders.
 * The most popular item in the dog food care aisle is Snack Sticks Chicken and Rice Recipe Dog Treats, present in 30 orders
@@ -180,11 +192,14 @@ instacart %>%
   mutate(order_rank = min_rank(desc(number_orders))) %>% 
   filter(order_rank == 1) %>% 
   knitr::kable()
+```
 
+```{r, include=FALSE}
+#ungroup instacart dataset
 ungroup(instacart)
 ```
 
-#### Question 4
+### Part 2.4
 
 Table displays the mean hour in each day of the week that coffee ice cream and pink lady apples are ordered. For both items, mean order hour falls slightly before noon to early afternoon. This suggests that approximately half of orders are placed before noon and half of orders are placed after. For coffee ice cream, the mean order time is latest midweek from Tues-Thurs around 3pm. 
 
@@ -200,4 +215,10 @@ instacart %>%
   knitr::kable(digits = 2)
 ```
 
+# Problem 3
+
+```{r}
+ny_noaa = p8105.datasets::ny_noaa %>% 
+  janitor::clean_names()
+```
 
