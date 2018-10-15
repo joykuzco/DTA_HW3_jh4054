@@ -12,11 +12,11 @@ output:
 
 This R Markdown for HW3 reinforces skills from Data Visualization and Exploratory Data Analysis
 
-### 0. Setup
+### Setup
 
 Load packages and set chunk options
 
-```{r setup, include=FALSE}
+```{r setup, collapse=TRUE}
 library(tidyverse)
 library(patchwork)
 library(viridis)
@@ -25,31 +25,57 @@ library(p8105.datasets)
 
 knitr::opts_chunk$set(
   warning = FALSE, 
-  message = FALSE, 
-  fig.width = 6,
-  fig.asp = .6,
-  out.width = "90%"
-)
+  message = FALSE)
 ```
 
 ### Problem 1
 
+Import and clean dataset
 ```{r}
-brfss_df = p8105.datasets::brfss_smart2010 %>% 
+brfss = p8105.datasets::brfss_smart2010 %>% 
   janitor::clean_names() %>% 
   filter(topic == "Overall Health") %>% 
   select(
     -class, -topic, -question, -sample_size, 
     -c(confidence_limit_low:geo_location)) %>% 
-  separate(locationdesc, into = c("rem1", "county"), sep = 5) %>% 
+  separate(locationdesc, into = c("rem1", "location"), sep = 5) %>% 
   select(-rem1) %>% 
   rename(state = locationabbr, proportion = data_value) %>% 
   mutate(response = factor(response, levels = c("Excellent","Very good", "Good", "Fair", "Poor"))) %>% 
-  arrange(year, state, county)
+  arrange(year, state, location)
 ```
+
+Part 1. In 2002, responses for the Overall Health parameter was available for exactly 7 locations in 3 states: Connecticut, Florida, and North Carolina.
 
 ```{r}
-
+brfss %>% 
+  filter(year == 2002) %>% 
+  distinct(state, location) %>% 
+  group_by(state) %>% 
+  summarise(number_locations = n()) %>% 
+  filter(number_locations == 7) %>% 
+  knitr::kable()
 ```
 
+Part 2. spaghetti plot that shows the number of locations in each state from 2002 to 2010
+
+```{r}
+brfss %>% 
+  group_by(state, year) %>% 
+  distinct(state, location) %>% 
+  summarise(number_locations = n()) %>% 
+  ggplot(aes(x = year, y = number_locations, color = state)) +
+    geom_line() +
+    labs(
+      title = "Number of Locations Represented in State",
+      x = "Year",
+      y = "Number of Locations",
+      caption = "Data from the BRFSS dataset"
+    ) + 
+    viridis::scale_color_viridis(
+      name = "State", 
+      discrete = TRUE) +
+    theme_bw() +  
+    theme(legend.position = "bottom")
+```
 
