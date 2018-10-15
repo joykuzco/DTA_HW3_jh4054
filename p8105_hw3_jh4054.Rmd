@@ -2,7 +2,7 @@
 title: "p8105_hw3_jh4054"
 author: "Joy Hsu"
 date: "10/12/2018"
-output: github_document:
+output: github_document
   
 ---
 
